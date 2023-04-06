@@ -14,39 +14,30 @@ tnum.env <- new.env()
 #' @return  List of numberspaces available on the server. The first one on the list is set as current
 #' @export
 
-tnum.authorize <- function(ip = "54.158.136.133") {
+tnum.authorize <- function(ip = "dev.truenumbers.com") {
   assign("tnum.var.ip", ip, envir = tnum.env)
-
-
-  ## Get token
-  result <- httr::POST(
-    paste0("http://", tnum.env$tnum.var.ip, "/v1/gateway/"),
-    httr::add_headers(Authorization = paste0("Bearer ", tnum.env$tnum.var.token)),
-    body = '{"email":"admin@truenumbers.com"}',
-    httr::accept("application/json"),
-    httr::content_type("application/json")
-  )
-  payload <- httr::content(result)
-  token <- payload$data$token
-  assign("tnum.var.token", token, envir = tnum.env)
 
   ## get list of numberspaces
   result <- httr::GET(
-    paste0("http://", ip, "/v1/numberspace/"),
-    httr::add_headers(Authorization = paste0("Bearer ", token))
+    paste0("http://", ip, "/v2/numberflow/numberspace")
   )
   nspaces <- list()
+
   payload <- httr::content(result)
+
   if (!is.null(payload$code)) {
     message(payload$code)
   } else {
-    for (x in httr::content(result)$data) {
-      nspaces <- append(nspaces, x[[2]])
+    for (x in payload$numberspaces) {
+
+      nspaces <- append(nspaces, substring(x[[1]],21))
     }
+    print(nspaces)
+   
     assign("tnum.var.nspace", nspaces[[1]], envir = tnum.env)
     assign("tnum.var.nspaces", nspaces, envir = tnum.env)
-    assign("tnum.var.token", token, envir = tnum.env)
-    tnum.setSpace("testspace")
+
+    tnum.setSpace(nspaces[[1]])
     message(paste0("Available spaces: ", paste0(unique(nspaces), collapse = ", ")))
     message(paste0("Numberspace set to: ", tnum.getSpace()))
   }
@@ -60,8 +51,8 @@ tnum.authorize <- function(ip = "54.158.136.133") {
 
 tnum.createSpace <- function(name) {
   result <- httr::POST(
-    paste0("http://", tnum.env$tnum.var.ip, "/v1/numberspace/"),
-    httr::add_headers(Authorization = paste0("Bearer ", tnum.env$tnum.var.token)),
+    paste0("http://", tnum.env$tnum.var.ip, "/v2/numberspace/"),
+    #httr::add_headers(Authorization = paste0("Bearer ", tnum.env$tnum.var.token)),
     body = paste0('{"numberspace":"', name, '"}'),
     httr::accept("application/json"),
     httr::content_type("application/json")
@@ -116,15 +107,21 @@ tnum.query <- function(query = "* has *",
       numberspace = tnum.env$tnum.var.nspace,
       limit = max,
       offset = start,
-      tnql = query
     )
 
-  result <-
-    httr::content(httr::GET(
-      paste0("http://", tnum.env$tnum.var.ip, "/v1/numberspace/numbers"),
-      query = args,
-      httr::add_headers(Authorization = paste0("Bearer ", tnum.env$tnum.var.token))
-    ))
+  result <- httr::POST(
+    paste0(
+      "http://",
+      tnum.env$tnum.var.ip,
+      "/v2/numberflow/tnql"
+    ),
+    encode = "json",
+    query = args,
+    httr::add_headers(Authorization = paste0("Bearer ", tnum.env$tnum.var.token)),
+    body = paste0('{"tnql":"',query,'"}'),
+    httr::accept("application/json"),
+    httr::content_type("application/json")
+  )
   numReturned <- length(result$data$truenumbers)
   if (numReturned > max) {
     numReturned <- max
@@ -263,15 +260,22 @@ tnum.queryResultToObjects <-
 
 tnum.deleteByQuery <- function(query = "") {
   args <-
-    list(numberspace = tnum.env$tnum.var.nspace,
-         tnql = query)
+    list(numberspace = tnum.env$tnum.var.nspace)
 
   result <-
-    httr::content(httr::DELETE(
-      paste0("http://", tnum.env$tnum.var.ip, "/v1/numberspace/numbers"),
+    result <- httr::DELETE(
+      paste0(
+        "http://",
+        tnum.env$tnum.var.ip,
+        "/v2/numberflow/numbers"
+      ),
+      encode = "json",
       query = args,
-      httr::add_headers(Authorization = paste0("Bearer ", tnum.env$tnum.var.token))
-    ))
+      httr::add_headers(Authorization = paste0("Bearer ", tnum.env$tnum.var.token)),
+      body = paste0('{"tnql":"',query,'"}'),
+      httr::accept("application/json"),
+      httr::content_type("application/json")
+    )
   numReturned <- length(result$data$removed)
 
   message(result)
@@ -290,8 +294,7 @@ tnum.tagByQuery <- function(query = "",
                             adds = list(),
                             removes = list()) {
   args <-
-    list(numberspace = tnum.env$tnum.var.nspace,
-         tnql = query)
+    list(numberspace = tnum.env$tnum.var.nspace)
   addstr <- paste0('"', paste(adds, collapse = '", "'), '"')
   remstr <- paste0('"', paste(removes, collapse = '", "'), '"')
   if (addstr == '""')
@@ -300,17 +303,16 @@ tnum.tagByQuery <- function(query = "",
     remstr <- ""
 
   bodystr <-
-    paste0('{"tags":[', addstr, '],"remove":[', remstr, ']}')
+    paste0('{"tags":[', addstr, '],"remove":[', remstr, '],', '"tnql":["', query,'"]}' )
 
   theurl <-
     paste0("http://",
            tnum.env$tnum.var.ip,
-           "/v1/numberspace/numbers/")
+           "/v2/numberflow/numbers/tags")
 
   result <- httr::PATCH(
     theurl,
     query = args,
-    httr::add_headers(Authorization = paste0("Bearer ", tnum.env$tnum.var.token)),
     body = bodystr,
     httr::accept("application/json"),
     httr::content_type("application/json")
@@ -601,11 +603,10 @@ tnum.postFromLists <-
           paste0(
             "http://",
             tnum.env$tnum.var.ip,
-            "/v1/numberspace/numbers"
+            "/v2/numberflow/numbers"
           ),
           encode = "json",
           query = args,
-          httr::add_headers(Authorization = paste0("Bearer ", tnum.env$tnum.var.token)),
           body = payload,
           httr::accept("application/json"),
           httr::content_type("application/json")
@@ -644,33 +645,6 @@ tnum.postObjects <-
     tnum.postFromLists(subject, property, objects, error, unit, tags)
   }
 
-#' Add a column of single tags element-wise to list of tnums by GUID
-#'
-#' @param gids  guids of tnums to tag
-#' @param adds   tags to add
-#'
-#' @return result of API call
-#' @export
-
-tnum.tagByGuids <- function(gids = c(),
-                            adds = c()) {
-  for (i in 1:length(gids)) {
-    theurl <-
-      paste0("http://",
-             tnum.env$tnum.var.ip,
-             "/v1/numberspace/numbers/",
-             gids[[i]])
-    bodystr <- paste0('{"tags":["', adds[[i]], '"],"remove":[]}')
-    result <- httr::PATCH(
-      theurl,
-      query = paste0("numberspace=", tnum.env$tnum.var.nspace),
-      httr::add_headers(Authorization = paste0("Bearer ", tnum.env$tnum.var.token)),
-      body = bodystr,
-      httr::accept("application/json"),
-      httr::content_type("application/json")
-    )
-  }
-}
 
 
 #' Create a tnum vector value string "vector(23,-34.02...)" from an R vector or list
