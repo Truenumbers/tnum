@@ -1,0 +1,76 @@
+---
+title: "MSSP 615 tnum notes"
+author: "[Allen Razdow](arazdow@truenum.com)"
+output: html_notebook
+---
+
+This document addresses questions and issues that came up in today's class.  
+
+### Package documentation  
+Yes, it is very minimal at this early stage in development of the package.  There are man pages for most of the functons.
+
+For example: *> ?tnum.tagByQuery* will display that function's documentation in the help window.
+
+
+### Case in REGEXP queries
+
+Most regular expression implementations include "flags" affecting the way a pattern is used.  You can find them described in most regular expression references. Here are ones useful in tnum:
+
+- *i*  --
+With this flag the search is case-insensitive: no difference between A and a (see the example below).
+
+- *u* --
+Enables full unicode support. The flag enables correct processing of surrogate pairs. 
+
+```{r}
+# This line assumes you have tnum.authorized() already
+# We pass the "i" flag to REGEXP as a second arg, also in escaped quotes:
+
+qresult <- tnum.query("*pride* has text = REGEXP(\"darcy\", \"i\")")
+
+# Display the value of one of the returned sentence tnums, using as.character() to strip
+#  the attributes of the object, so only the text value of the sentence is shown.  
+#  Note that "Darcy" was matched by "darcy" using the "i" flag.  
+
+ as.character(qresult[[1]])
+
+```
+### Deleting tags from the database
+
+Use the _tnum.tagByQuery_ functon _removes =_ argument.  Tags in the removes list will be deleted:
+
+tnum.tagByQuery(query = "", adds = list(), removes = list())
+
+### Using tnum.graphTnumList( )
+
+This type of graph is useful because it shows subjects, properties and tags in one picture.  We tag sentences in Sense and Sensibility with two different tags to illustrate:
+```{r}
+# Tag sentences mentioning money
+tnum.tagByQuery("*sense* has text = REGEXP(\"pounds|money\",\"i\")", adds="notes:money")
+
+# Tag mentions of romance
+tnum.tagByQuery("*sense* has text = REGEXP(\"love|romantic|romance\",\"i\")", adds="notes:love")
+```
+
+Now we can retreive sentences with either tag, and graph the result:
+
+```{r}
+taggedNums <- tnum.query("@notes#", max=200)
+
+# Since our query returned many tnums, our graph would be very cluttered if we don't do some aggregation of nodes
+# "collectors" are patterns to match segments of the subjects, with special wildcard ### on which to collect nodes.
+# We use two collectors for paragraphs and sentences.  This will result in collecting tags for each chapter.  
+#
+# We use a regular expression to select the tags we just added, leaving out the many tags added during your projects. 
+# 
+
+tnum.graphTnumList(taggedNums,
+                   collectors = list("paragraph-###","sentence-###"),
+                   tagpattern = "notes:.+",
+                   style = "tree"
+                   )
+```
+Finally, we remove the tags we just used:
+```{r}
+tnum.tagByQuery("@notes#", removes = list("notes:love","notes:money"))
+```

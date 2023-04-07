@@ -1,27 +1,34 @@
 tnum.authorize          Connect and authenticate to Truenumbers server
+tnum.createSpace        Create new numberspace
+tnum.decodeNumericVectorString
+                        Return numeric vector from string
+                        "vector(1.23,34.5....)"
 tnum.deleteByQuery      Delete tnums specified by a query
-tnum.env                Vars local to this file @export
-tnum.getSpace           Get current numberspace name
-tnum.makeTruenumber     Create a JSON truenumber from parts
-tnum.postTruenumber     Post a single truenumber from parts
-tnum.postTruenumbers    Create many truenumbers from lists of parts
+tnum.getAttrFromList    Title
+tnum.getDBPathList      Get phrase taxonomies
+tnum.getDatabasePhraseList
+                        Get phrase taxonomies
+tnum.graphPathList      Make and render a graph from a list of phrase
+                        paths
+tnum.graphTnumList      Make full tnum graph from tnum.query return
+                        data frame
+tnum.makeNumericVectorString
+                        Create a tnum vector value string
+                        "vector(23,-34.02...)" from an R vector or list
+tnum.makeObject         make a tnum object from numeric values in a
+                        tnum data frame
+tnum.makePhraseGraphFromPathList
+                        Get a DiagrammeR tree for rendering, from a
+                        list of SRD paths
+tnum.makeTnumJson       Create a JSON truenumber from parts
+tnum.makeTnumPhraseGraph
+                        Make full tnum graph from tnum.query return
+                        data frame
+tnum.objectsToDf        make data frame from list of tnum objects
+tnum.plotGraph          Plot DiagrammeR graph
+tnum.postFromLists      Create many truenumbers from lists of parts
+tnum.postObjects        post a list or vector of tnum objects
 tnum.query              Query the truenumber DB
-tnum.queryResultToDataframe
-                        Title
-tnum.setSpace           Set a particular numberspace as current
-tnum.tagByGuids         Add and remove tags to tnums specified by a
-                        list of their GUID's
+tnum.queryResultToObjects
+                        Convert tnum query result to an object list
 tnum.tagByQuery         Tag tnums specified by a query
-tnum.twitteR.authorize
-                        Authenticate twitteR package with Twitter
-                        account
-tnum.twitteR.post_tweets_as_tnums
-                        Post new tnums from twitteR query result tnums
-                        for each tweet: 1. tnum for full text 2. tnum
-                        for create date 3. tnum for favorite count (not
-                        present if 0) 4. tnum for retweet count (not
-                        present if 0) 5 tnum for replied-to tweet
-                        subject (not present if not a reply) 6. tnum
-                        for user location tags for each tweet: 1.
-                        tagged if retweet 2. tagged if truncated 3.
-                        tagged with user device

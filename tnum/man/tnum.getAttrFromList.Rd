@@ -9,9 +9,6 @@ tnum.getAttrFromList(obs, attname, rval = NA)
 \arguments{
 \item{rval}{}
 }
-\value{
-
-}
 \description{
 Title
 }

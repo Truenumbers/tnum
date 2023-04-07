@@ -1,11 +1,11 @@
-* using log directory 'C:/Users/Allen Razdow/Documents/GitHub/tnum/tnum.Rcheck'
-* using R version 4.0.0 (2020-04-24)
+* using log directory 'C:/Users/allen/Documents/tnum/tnum.Rcheck'
+* using R version 4.2.1 (2022-06-23 ucrt)
 * using platform: x86_64-w64-mingw32 (64-bit)
-* using session charset: ISO8859-1
+* using session charset: UTF-8
 * using options '--no-manual --as-cran'
 * checking for file 'tnum/DESCRIPTION' ... OK
 * checking extension type ... Package
-* this is package 'tnum' version '0.1.0'
+* this is package 'tnum' version '0.3.3'
 * package encoding: UTF-8
 * checking package namespace information ... OK
 * checking package dependencies ... OK
@@ -16,7 +16,10 @@
 * checking for portable file names ... OK
 * checking serialization versions ... OK
 * checking whether package 'tnum' can be installed ... OK
-* checking installed package size ... OK
+* checking installed package size ... NOTE
+  installed size is  5.7Mb
+  sub-directories of 1Mb or more:
+    Rmd   5.6Mb
 * checking package directory ... OK
 * checking for future file timestamps ... OK
 * checking DESCRIPTION meta-information ... NOTE
@@ -34,43 +37,58 @@ License components which are templates and need '+ file LICENSE':
 * checking whether the namespace can be loaded with stated dependencies ... OK
 * checking whether the namespace can be unloaded cleanly ... OK
 * checking loading without being on the library search path ... OK
-* checking dependencies in R code ... OK
+* checking dependencies in R code ... WARNING
+'::' or ':::' import not declared from: 'readr'
+Namespaces in Imports field not imported from:
+  'jsonlite' 'sticky' 'utils'
+  All declared Imports should be used.
 * checking S3 generic/method consistency ... OK
 * checking replacement functions ... OK
 * checking foreign function calls ... OK
 * checking R code for possible problems ... NOTE
-tnum.twitteR.post_tweets_as_tnums: no visible global function
-  definition for 'tnum.maketruenumbers'
+tnum.makePhraseGraphFromPathList: no visible global function definition
+  for 'rgb'
+tnum.makePhraseGraphFromPathList : get_last_node_id: no visible global
+  function definition for 'tail'
+tnum.makeTnumJson: no visible global function definition for
+  'str_replace_all'
+tnum.query: missing arguments not allowed in calls to 'list'
+tnum.queryResultToObjects : decodenumber: no visible binding for global
+  variable 'value'
 Undefined global functions or variables:
-  tnum.maketruenumbers
-* checking Rd files ... NOTE
-prepare_Rd: tnum.makeTruenumber.Rd:21-23: Dropping empty section \value
-prepare_Rd: tnum.postTruenumber.Rd:21-23: Dropping empty section \value
-prepare_Rd: tnum.postTruenumbers.Rd:21-23: Dropping empty section \value
-prepare_Rd: tnum.queryResultToDataframe.Rd:12-14: Dropping empty section \value
-prepare_Rd: tnum.twitteR.authorize.Rd:9-11: Dropping empty section \value
+  rgb str_replace_all tail value
+Consider adding
+  importFrom("grDevices", "rgb")
+  importFrom("utils", "tail")
+to your NAMESPACE file.
+* checking Rd files ... OK
 * checking Rd metadata ... OK
 * checking Rd line widths ... OK
 * checking Rd cross-references ... OK
-* checking for missing documentation entries ... OK
+* checking for missing documentation entries ... WARNING
+Undocumented code objects:
+  'tnum.env' 'tnum.getSpace' 'tnum.setSpace'
+All user-level objects in a package should have documentation entries.
+See chapter 'Writing R documentation files' in the 'Writing R
+Extensions' manual.
 * checking for code/documentation mismatches ... OK
 * checking Rd \usage sections ... WARNING
-Undocumented arguments in documentation object 'tnum.makeTruenumber'
-  'subject' 'property' 'Cvalue' 'Nvalue' 'error' 'units'
-  'noEmptyStrings'
+Documented arguments not in \usage in documentation object 'tnum.authorize':
+  'key'
 
-Undocumented arguments in documentation object 'tnum.postTruenumber'
-  'subject' 'property' 'Cvalue' 'Nvalue' 'error' 'units'
-  'noEmptyStrings'
+Undocumented arguments in documentation object 'tnum.getAttrFromList'
+  'obs' 'attname'
 
-Undocumented arguments in documentation object 'tnum.postTruenumbers'
-  'subject' 'property' 'Cvalue' 'Nvalue' 'error' 'units' 'tags'
+Undocumented arguments in documentation object 'tnum.makeObject'
+  'subject' 'property' 'value' 'error' 'unit' 'tags' 'dat' 'gid'
+Documented arguments not in \usage in documentation object 'tnum.makeObject':
+  'df' 'numerics'
 
-Undocumented arguments in documentation object 'tnum.queryResultToDataframe'
-  'max'
+Undocumented arguments in documentation object 'tnum.makeTnumJson'
+  'subject' 'property' 'value' 'numeric.error' 'unit' 'tags'
 
-Undocumented arguments in documentation object 'tnum.twitteR.post_tweets_as_tnums'
-  'customTags'
+Undocumented arguments in documentation object 'tnum.postFromLists'
+  'subject' 'property' 'value' 'numeric.error' 'unit' 'tags'
 
 Functions with \usage entries need to have the appropriate \alias
 entries, and all their arguments documented.
@@ -78,18 +96,21 @@ The \usage entries must correspond to syntactically valid R code.
 See chapter 'Writing R documentation files' in the 'Writing R
 Extensions' manual.
 * checking Rd contents ... WARNING
-Argument items with no description in Rd object 'tnum.makeTruenumber':
-  'tags'
+Argument items with no description in Rd object 'tnum.decodeNumericVectorString':
+  'nvs'
 
-Argument items with no description in Rd object 'tnum.postTruenumber':
-  'tags'
+Argument items with no description in Rd object 'tnum.getAttrFromList':
+  'rval'
 
-Argument items with no description in Rd object 'tnum.queryResultToDataframe':
-  'result'
+Argument items with no description in Rd object 'tnum.makeTnumJson':
+  'noEmptyStrings'
+
+Argument items with no description in Rd object 'tnum.postObjects':
+  'objects'
 
 * checking for unstated dependencies in examples ... OK
 * checking examples ... NONE
 * checking for non-standard things in the check directory ... OK
 * checking for detritus in the temp directory ... OK
 * DONE
-Status: 2 WARNINGs, 3 NOTEs
+Status: 4 WARNINGs, 3 NOTEs

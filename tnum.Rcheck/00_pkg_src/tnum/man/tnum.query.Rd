@@ -4,17 +4,19 @@
 \alias{tnum.query}
 \title{Query the truenumber DB}
 \usage{
-tnum.query(query = "* has *", max = 10, start = 0)
+tnum.query(query = "* has *", SI = FALSE, max = 10, start = 0)
 }
 \arguments{
 \item{query}{string in tnum query language}
+
+\item{SI}{if TRUE, returns the SI value}
 
 \item{max}{maximum nuber of truenumbers to return}
 
 \item{start}{begin return with this sequence number}
 }
 \value{
-a data.frame where each row is a returned truenumber
+a list of tnum class vaues
 }
 \description{
 Query the truenumber DB

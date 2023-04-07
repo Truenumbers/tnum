@@ -17,9 +17,6 @@ tnum.postFromLists(
 \arguments{
 \item{noEmptyStrings}{if true doesn't post TNs with empty values}
 }
-\value{
-
-}
 \description{
 Create many truenumbers from lists of parts
 }

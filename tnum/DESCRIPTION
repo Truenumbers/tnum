@@ -8,7 +8,7 @@ Description: Truenumbers (TN) is a novel data representation that is domain inde
 License: MIT
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.0
+RoxygenNote: 7.2.1
 Imports:
   httr, jsonlite,utils, data.tree, stringr, DiagrammeR, sticky
 Suggested:

@@ -4,10 +4,12 @@
 \alias{tnum.authorize}
 \title{Connect and authenticate to Truenumbers server}
 \usage{
-tnum.authorize(ip = "54.166.186.11")
+tnum.authorize(ip = "dev.truenumbers.com")
 }
 \arguments{
 \item{ip}{The endpoint address of the server. Default is a public cloud server}
+
+\item{key}{token to authorize API access}
 }
 \value{
 List of numberspaces available on the server. The first one on the list is set as current

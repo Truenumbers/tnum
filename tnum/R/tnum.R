@@ -15,7 +15,11 @@ tnum.env <- new.env()
 #' @export
 
 tnum.authorize <- function(ip = "dev.truenumbers.com") {
-  assign("tnum.var.ip", ip, envir = tnum.env)
+  ip1 <- ip;
+  if(!stringr::str_detect(ip1, ":")){
+    ip1 <- paste0(stringr::str_trim(ip1, "both"),":8081")
+  }
+  assign("tnum.var.ip", ip1, envir = tnum.env)
 
   ## get list of numberspaces
   result <- httr::GET(
@@ -33,7 +37,7 @@ tnum.authorize <- function(ip = "dev.truenumbers.com") {
       nspaces <- append(nspaces, substring(x[[1]],21))
     }
     print(nspaces)
-   
+
     assign("tnum.var.nspace", nspaces[[1]], envir = tnum.env)
     assign("tnum.var.nspaces", nspaces, envir = tnum.env)
 
