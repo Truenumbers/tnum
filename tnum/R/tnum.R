@@ -23,7 +23,7 @@ tnum.authorize <- function(ip = "dev.truenumbers.com") {
 
   ## get list of numberspaces
   result <- httr::GET(
-    paste0("http://", ip, "/v2/numberflow/numberspace")
+    paste0("http://", ip1, "/v2/numberflow/numberspace")
   )
   nspaces <- list()
 
@@ -109,11 +109,11 @@ tnum.query <- function(query = "* has *",
   args <-
     list(
       numberspace = tnum.env$tnum.var.nspace,
-      limit = max,
-      offset = start,
+      limit = paste0(max),
+      offset = paste0(start)
     )
-
-  result <- httr::POST(
+  payload <- paste0('{"tnql":"',query,'"}')
+  resultraw <- httr::POST(
     paste0(
       "http://",
       tnum.env$tnum.var.ip,
@@ -121,12 +121,12 @@ tnum.query <- function(query = "* has *",
     ),
     encode = "json",
     query = args,
-    httr::add_headers(Authorization = paste0("Bearer ", tnum.env$tnum.var.token)),
-    body = paste0('{"tnql":"',query,'"}'),
+    body = payload,
     httr::accept("application/json"),
     httr::content_type("application/json")
   )
-  numReturned <- length(result$data$truenumbers)
+  result <- httr::content(resultraw, as="parsed")
+  numReturned <- length(result$truenumbers)
   if (numReturned > max) {
     numReturned <- max
   }
@@ -141,7 +141,7 @@ tnum.query <- function(query = "* has *",
       " thru ",
       start + numReturned,
       " of ",
-      result$data$meta$records,
+      result$count,
       " results"
     )
   )
@@ -227,14 +227,14 @@ tnum.queryResultToObjects <-
 
     retList <- list()
 
-    if (is.null(result$data$truenumbers[[1]]$truenumbers)) {
-      for (tn in result$data$truenumbers) {
+    if (is.null(result$truenumbers[[1]]$truenumbers)) {
+      for (tn in result$truenumbers) {
         retList[[length(retList) + 1]] <- decodenumber(tn)
       }
 
     } else {
       count <- max
-      for (tnList in result$data$truenumbers) {
+      for (tnList in result$truenumbers) {
         tnGroup <- tnList$truenumbers
         for (tn in tnGroup) {
           retList[[length(retList) + 1]] <- decodenumber(tn)
