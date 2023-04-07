@@ -266,7 +266,7 @@ tnum.deleteByQuery <- function(query = "") {
   args <-
     list(numberspace = tnum.env$tnum.var.nspace)
 
-  result <-
+  resultraw <-
     result <- httr::DELETE(
       paste0(
         "http://",
@@ -275,14 +275,18 @@ tnum.deleteByQuery <- function(query = "") {
       ),
       encode = "json",
       query = args,
-      httr::add_headers(Authorization = paste0("Bearer ", tnum.env$tnum.var.token)),
       body = paste0('{"tnql":"',query,'"}'),
       httr::accept("application/json"),
       httr::content_type("application/json")
     )
-  numReturned <- length(result$data$removed)
+  result <- httr::content(resultraw, as="parsed")
+  numReturned <- length(result$deletedCount)
 
-  message(result)
+  plural <- " match"
+  if(numReturned != 1){
+    plural <- " matches"
+  }
+  message(paste0("deleted ", numReturned, plural))
 }
 
 #' Tag tnums specified by a query
@@ -307,7 +311,7 @@ tnum.tagByQuery <- function(query = "",
     remstr <- ""
 
   bodystr <-
-    paste0('{"tags":[', addstr, '],"remove":[', remstr, '],', '"tnql":["', query,'"]}' )
+    paste0('{"addTags":[', addstr, '],"removeTags":[', remstr, '],', '"tnql":"', query,'"}' )
 
   theurl <-
     paste0("http://",
@@ -321,7 +325,8 @@ tnum.tagByQuery <- function(query = "",
     httr::accept("application/json"),
     httr::content_type("application/json")
   )
-  message(httr::content(result))
+  result <- httr::content(result)
+  message(paste0("Tags: ",result$taggedCount, " added, ",result$tagsRemovedCount, " removed."))
 }
 
 # utility to get attr from list
