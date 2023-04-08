@@ -51,7 +51,6 @@ tnum.loadLibs <- function(){
 #'        Macros are of the form $funcName(column name), or $(column name).  The column value is substituted
 #'        for the macro.  If a function name is present, that function processes the column value before substitution.
 #'
-#' @param outfile if non-empty, causes TNs and tags to be written to a file, not the server.
 #'
 #' @param nocache  if TRUE, the server's caching mechanism will not be used.  Every TN will be separately posted instead
 #'                 of cached so that 500 TN at a time can be posted in one call.
@@ -60,8 +59,8 @@ tnum.loadLibs <- function(){
 #'
 
 tnum.ingestDataFrame <- function(df,
-                                 templates = list(),
-                                 outfile = ""){
+                                 templates = list()
+                                 ){
 
   ######### local fns
   tkn <- function(val){
@@ -120,13 +119,6 @@ tnum.ingestDataFrame <- function(df,
   tnCount <- 0
 
 
-  if(is.null(outfile) || outfile == ""){
-    outfile = "temptnfile.txt"
-  }
-
-      theFile <- file(outfile, "w")
-
-
   for(i in 1:dfRows){
 
     for(pair in templates){
@@ -143,19 +135,13 @@ tnum.ingestDataFrame <- function(df,
           tagList <- str_split(str_replace_all(tagT,"\\s+",""), ",")
           tagList <- as.list(tagList[[1]])
         }
-        tnResult <- tnum.postStatement(tnT, tags = tagList, noreturn = TRUE, filedestination = theFile)
+       tnum.postStatement(tnT, tagList)
         tnCount <- tnCount + 1
 
       }
   }
-    close(theFile)
-    print(paste0(tnCount, " TNs written "))
 
-  if(outfile == "temptnfile.txt"){
-    print("posting to server...")
-    tnum.writeTnFile("temptnfile.txt")
-  }
-    print("done.")
+    print(paste0(tnCount, " TNs written "))
 
 
 

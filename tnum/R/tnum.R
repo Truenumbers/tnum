@@ -633,6 +633,31 @@ tnum.postFromLists <-
     message(paste0("posted ", numnums, " tnums"))
   }
 
+#' post a list or vector of tnum objects
+#'
+#' @param sentence
+#' @param tags
+#'
+#' @return
+#' @export
+
+tnum.postStatement <-
+  function(sentence, tags = list()) {
+    args <-
+      list(numberspace = tnum.env$tnum.var.nspace)
+    payload <- paste0('{"noReturn": true, "skipStore":false, "truespeak":"', sentence,'", "tags":["',paste0(tags, collapse="\",\""),'"]}')
+    result <- httr::POST(
+      paste0("http://",
+             tnum.env$tnum.var.ip,
+             "/v2/numberflow/numbers"),
+      encode = "json",
+      query = args,
+      body = payload,
+      httr::accept("application/json"),
+      httr::content_type("application/json")
+    )
+  }
+
 
 #' post a list or vector of tnum objects
 #'
