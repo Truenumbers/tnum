@@ -8,8 +8,7 @@ tnum.getDatabasePhraseList(
   taxonomy = "subject",
   pattern = "",
   levels = NA,
-  max = 100,
-  start.at = 0
+  max = 100
 )
 }
 \arguments{
@@ -20,8 +19,6 @@ tnum.getDatabasePhraseList(
 \item{levels}{How deep to go in the taxonomy}
 
 \item{max}{integer, how many results to return max}
-
-\item{start.at}{offset at which to begin returning max results}
 }
 \value{
 a vector of paths in the taxonomy

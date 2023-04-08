@@ -6,7 +6,6 @@
 #' @param pattern  a tnum path with path-wildcard #, or string-wildcard * to restrict what tree is returned.
 #' @param levels How deep to go in the taxonomy
 #' @param max   integer, how many results to return max
-#' @param start.at  offset at which to begin returning max results
 #'
 #' @return a vector of paths in the taxonomy
 
@@ -14,8 +13,7 @@ tnum.getDatabasePhraseList <-
   function(taxonomy = "subject",
            pattern = "",
            levels = NA,
-           max = 100,
-           start.at = 0
+           max = 100
            ) {
 
     # get taxonomy as list
@@ -23,52 +21,38 @@ tnum.getDatabasePhraseList <-
       levels <- 100
     }
 
-    if(is.na(levels)){
     args <-
       list(
         numberspace = tnum.env$tnum.var.nspace,
         type = taxonomy,
-        srd = pattern,
-        limit = max,
-        offset = start.at,
-        format = "list"
+        path = pattern,
+        limit = max
       )
-    } else {
-      args <-
-        list(
-          numberspace = tnum.env$tnum.var.nspace,
-          type = taxonomy,
-          srd = pattern,
-          limit = max,
-          depth = levels,
-          offset = start.at,
-          format = "list"
-        )
-    }
+
     result <- httr::GET(
       query = args,
       paste0(
         "http://",
         tnum.env$tnum.var.ip,
-        "/v1/numberspace/taxonomy"
+        "/v2/taxonomy/describe"
       ),
-      httr::add_headers(Authorization = paste0("Bearer ", tnum.env$tnum.var.token)),
       httr::accept("application/json"),
       httr::content_type("application/json")
     )
     #build path vector from the result
 
-    tnApiRoot <- httr::content(result)$data
+    tnApiRoot <- httr::content(result)$taxonomy
     if(!is.null(tnApiRoot) && length(tnApiRoot) > 0){
       retvec <- vector(mode="character")
       count <- 1
-      ##retvec[[1]] <- tnApiRoot[[1]]$name
-      retvec[[1]] <- ""
+      retvec[[1]] <- paste0(tnApiRoot[[1]]$name," (",tnApiRoot[[1]]$truenumberCount,")")
+      ##retvec[[1]] <- ""
       for(i in 1:length(tnApiRoot)){
         listelement <- tnApiRoot[[i]]$name
+        listcount <- tnApiRoot[[i]]$truenumberCount
         if(!startsWith(retvec[[count]], listelement)){
           count <- count + 1
-          retvec[[count]] <- listelement
+          retvec[[count]] <- paste0(listelement," (",listcount,")")
         }
       }
     } else {
@@ -346,19 +330,17 @@ tnum.plotGraph <- function(gph,style="neato", size=0){
 #' @param pattern  a tnum path with path-wildcard #, or string-wildcard * to restrict what tree is returned.
 #' @param levels How deep to go in the taxonomy
 #' @param max   integer, how many results to return max
-#' @param start.at  offset at which to begin returning max results
 #'
 #' @return a vector of paths in the taxonomy
 #' @export
 
-tnum.getDBPathList <-
+tnum.getSpacePathList <-
   function(taxonomy = "subject",
            pattern = "",
            levels = NA,
-           max = 100,
-           start.at = 0
+           max = 100
   ) {
-    return(tnum.getDatabasePhraseList(taxonomy,pattern,levels,max,start.at))
+    return(tnum.getDatabasePhraseList(taxonomy,pattern,levels,max))
   }
 
 
