@@ -55,7 +55,7 @@ tnum.authorize <- function(ip = "dev.truenumbers.com") {
 
 tnum.createSpace <- function(name) {
   result <- httr::POST(
-    paste0("http://", tnum.env$tnum.var.ip, "/v2/numberspace/"),
+    paste0("http://", tnum.env$tnum.var.ip, "/v2/numberflow/numberspace"),
     #httr::add_headers(Authorization = paste0("Bearer ", tnum.env$tnum.var.token)),
     body = paste0('{"numberspace":"', name, '"}'),
     httr::accept("application/json"),
